@@ -127,7 +127,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            context.read<AuthProvider>().clearError();
+            Navigator.pop(context);
+          },
         ),
       ),
       body: SafeArea(
@@ -142,8 +145,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(height: 16.h),
-                      SvgPicture.asset(
-                        'assets/images/otp_verification.svg',
+                      SvgPicture.network(
+                        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976163/otp_verification_s7v3lb.svg',
                         height: 160.h,
                       ),
                       SizedBox(height: 28.h),

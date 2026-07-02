@@ -1,10 +1,6 @@
 import '../models/tailor_model.dart';
 import '../models/product_model.dart';
-//import '../models/news_model.dart';
 
-/// Single source of all static mock data for the app.
-/// Since this is a frontend-only build, everything lives here.
-/// Swapping for a real API later means only touching this file.
 class MockDataService {
   MockDataService._();
 
@@ -12,7 +8,8 @@ class MockDataService {
     TailorModel(
       id: 't1',
       name: 'Stitch & Style',
-      imagePath: 'assets/images/tailor_1.jpg',
+      imagePath:
+          'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976163/tailor_1_bllexs.jpg',
       rating: 5.0,
       totalOrders: 153,
       isVerified: true,
@@ -24,7 +21,8 @@ class MockDataService {
     TailorModel(
       id: 't2',
       name: 'The Fitted Look',
-      imagePath: 'assets/images/tailor_2.jpg',
+      imagePath:
+          'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_2_clc9iw.jpg',
       rating: 4.8,
       totalOrders: 145,
       isVerified: true,
@@ -36,7 +34,8 @@ class MockDataService {
     TailorModel(
       id: 't3',
       name: 'Prestige Tailors',
-      imagePath: 'assets/images/tailor_3.jpg',
+      imagePath:
+          'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_3_od7lzp.jpg',
       rating: 4.9,
       totalOrders: 210,
       isVerified: true,
@@ -48,7 +47,8 @@ class MockDataService {
     TailorModel(
       id: 't4',
       name: 'Thread & Needle Co.',
-      imagePath: 'assets/images/tailor_4.jpg',
+      imagePath:
+          'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_4_nlnvmj.jpg',
       rating: 4.7,
       totalOrders: 98,
       isVerified: false,
@@ -63,7 +63,8 @@ class MockDataService {
     ProductModel(
       id: 'p1',
       name: 'Embroidered Lawn Suit',
-      imagePath: 'assets/images/product_1.jpg',
+      imagePath:
+          'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976163/product_1_xytj3w.jpg',
       price: 3500,
       rating: 4.6,
       totalOrders: 54,
@@ -76,7 +77,8 @@ class MockDataService {
     ProductModel(
       id: 'p2',
       name: 'Formal Silk Kurta',
-      imagePath: 'assets/images/product_2.jpg',
+      imagePath:
+          'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/product_2_ylx1kr.jpg',
       price: 5200,
       rating: 4.8,
       totalOrders: 38,
@@ -89,7 +91,8 @@ class MockDataService {
     ProductModel(
       id: 'p3',
       name: 'Casual Linen Outfit',
-      imagePath: 'assets/images/product_3.jpg',
+      imagePath:
+          'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976162/product_3_eacftc.jpg',
       price: 2800,
       rating: 4.5,
       totalOrders: 72,
@@ -102,7 +105,8 @@ class MockDataService {
     ProductModel(
       id: 'p4',
       name: 'Bridal Chiffon Dress',
-      imagePath: 'assets/images/product_4.jpg',
+      imagePath:
+          'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976163/product_4_hfjmox.jpg',
       price: 8500,
       rating: 5.0,
       totalOrders: 21,
@@ -114,35 +118,3 @@ class MockDataService {
     ),
   ];
 }
-
-/*  static List<NewsModel> getNews() => const [
-        NewsModel(
-          id: 'n1',
-          title: 'Top Fabric Trends to Watch This Season',
-          imagePath: 'assets/images/news_1.jpg',
-          category: 'Fashion',
-          timeAgo: '2 days ago',
-        ),
-        NewsModel(
-          id: 'n2',
-          title: 'How to Style Your Shalwar Kameez for Every Occasion',
-          imagePath: 'assets/images/news_2.jpg',
-          category: 'Style',
-          timeAgo: '5 days ago',
-        ),
-        NewsModel(
-          id: 'n3',
-          title: 'The Rise of Bespoke Tailoring in Pakistan',
-          imagePath: 'assets/images/news_3.jpg',
-          category: 'News',
-          timeAgo: '1 week ago',
-        ),
-        NewsModel(
-          id: 'n4',
-          title: '5 Signs Your Tailor is Worth Every Rupee',
-          imagePath: 'assets/images/news_4.jpg',
-          category: 'Tips',
-          timeAgo: '2 weeks ago',
-        ),
-      ];
-}*/

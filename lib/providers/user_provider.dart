@@ -10,7 +10,8 @@ class UserProvider extends ChangeNotifier {
     String name = 'Afzal Virk',
     String email = 'afzal.virk@example.com',
     String phone = '03001234567',
-    String avatarAsset = 'assets/images/user_avatar.jpg',
+    String avatarAsset =
+        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/user_avatar_mgizef.jpg',
   }) : _name = name,
        _email = email,
        _phone = phone,

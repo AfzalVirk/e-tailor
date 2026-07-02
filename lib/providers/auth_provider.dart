@@ -111,6 +111,11 @@ class AuthProvider extends ChangeNotifier {
     return _sendFirebaseOtp(phone, OtpContext.forgotPassword);
   }
 
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   Future<bool> _sendFirebaseOtp(
     String localPhone,
     OtpContext otpContext,

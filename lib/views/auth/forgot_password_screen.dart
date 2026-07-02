@@ -29,6 +29,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthProvider>().clearError();
+    });
+  }
+
   Future<void> _handleContinue() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -80,8 +88,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         SizedBox(height: 8.h),
                         const Spacer(flex: 2),
                         Center(
-                          child: SvgPicture.asset(
-                            'assets/images/forgot_password.svg',
+                          child: SvgPicture.network(
+                            'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976162/forgot_password_gvu4kz.svg',
                             height: 180.h,
                           ),
                         ),

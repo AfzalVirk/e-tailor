@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_text_styles.dart';
 import '../models/product_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -36,11 +37,35 @@ class ProductCard extends StatelessWidget {
                 topLeft: Radius.circular(14.r),
                 topRight: Radius.circular(14.r),
               ),
-              child: Image.asset(
-                product.imagePath,
+              child: CachedNetworkImage(
+                imageUrl: product.imagePath,
                 height: 120.h,
                 width: double.infinity,
                 fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  height: 120.h,
+                  width: double.infinity,
+                  color: AppColors.backgroundLight,
+                  child: Center(
+                    child: SizedBox(
+                      width: 24.w,
+                      height: 24.w,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  height: 120.h,
+                  width: double.infinity,
+                  color: AppColors.backgroundLight,
+                  child: Icon(
+                    Icons.image_not_supported_outlined,
+                    color: AppColors.textSecondaryLight,
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -50,10 +75,9 @@ class ProductCard extends StatelessWidget {
                 children: [
                   Text(
                     product.name,
-                    style: AppTextStyles.bodySmall(context).copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 11.sp,
-                    ),
+                    style: AppTextStyles.bodySmall(
+                      context,
+                    ).copyWith(fontWeight: FontWeight.w600, fontSize: 11.sp),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -69,13 +93,17 @@ class ProductCard extends StatelessWidget {
                   SizedBox(height: 4.h),
                   Row(
                     children: [
-                      Icon(Icons.star_rounded,
-                          color: AppColors.gold, size: 11.sp),
+                      Icon(
+                        Icons.star_rounded,
+                        color: AppColors.gold,
+                        size: 11.sp,
+                      ),
                       SizedBox(width: 2.w),
                       Text(
                         '${product.rating}  •  ${product.totalOrders} orders',
-                        style: AppTextStyles.bodySmall(context)
-                            .copyWith(fontSize: 9.sp),
+                        style: AppTextStyles.bodySmall(
+                          context,
+                        ).copyWith(fontSize: 9.sp),
                       ),
                     ],
                   ),

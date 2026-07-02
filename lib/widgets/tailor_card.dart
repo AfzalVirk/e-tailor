@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_text_styles.dart';
 import '../models/tailor_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class TailorCard extends StatelessWidget {
   final TailorModel tailor;
@@ -42,9 +43,24 @@ class TailorCard extends StatelessWidget {
                     border: Border.all(color: AppColors.gold, width: 2.5),
                   ),
                   child: ClipOval(
-                    child: Image.asset(
-                      tailor.imagePath,
+                    child: CachedNetworkImage(
+                      imageUrl: tailor.imagePath,
                       fit: BoxFit.cover,
+                      placeholder: (context, url) => Center(
+                        child: SizedBox(
+                          width: 24.w,
+                          height: 24.w,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Icon(
+                        Icons.person,
+                        color: AppColors.textSecondaryLight,
+                        size: 32.sp,
+                      ),
                     ),
                   ),
                 ),
@@ -72,10 +88,9 @@ class TailorCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 8.w),
               child: Text(
                 tailor.name,
-                style: AppTextStyles.bodySmall(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11.sp,
-                ),
+                style: AppTextStyles.bodySmall(
+                  context,
+                ).copyWith(fontWeight: FontWeight.w600, fontSize: 11.sp),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -89,16 +104,18 @@ class TailorCard extends StatelessWidget {
                 SizedBox(width: 3.w),
                 Text(
                   tailor.rating.toString(),
-                  style: AppTextStyles.bodySmall(context)
-                      .copyWith(fontSize: 11.sp),
+                  style: AppTextStyles.bodySmall(
+                    context,
+                  ).copyWith(fontSize: 11.sp),
                 ),
               ],
             ),
             SizedBox(height: 2.h),
             Text(
               '${tailor.totalOrders} orders',
-              style: AppTextStyles.bodySmall(context)
-                  .copyWith(fontSize: 10.sp, color: AppColors.textSecondaryLight),
+              style: AppTextStyles.bodySmall(
+                context,
+              ).copyWith(fontSize: 10.sp, color: AppColors.textSecondaryLight),
             ),
             SizedBox(height: 12.h),
           ],

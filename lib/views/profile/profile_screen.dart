@@ -7,9 +7,86 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../widgets/custom_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  Future<void> _confirmLogout(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: AppColors.surfaceLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(24.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.all(14.w),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.logout_rounded,
+                  color: AppColors.error,
+                  size: 28.sp,
+                ),
+              ),
+              SizedBox(height: 16.h),
+              Text('Log Out?', style: AppTextStyles.heading3(context)),
+              SizedBox(height: 8.h),
+              Text(
+                'Are you sure you want to log out of your account?',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMedium(
+                  context,
+                  color: AppColors.textSecondaryLight,
+                ),
+              ),
+              SizedBox(height: 24.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomButton(
+                      label: 'No',
+                      isOutlined: true,
+                      backgroundColor: AppColors.textSecondaryLight,
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: CustomButton(
+                      label: 'Yes',
+                      backgroundColor: AppColors.error,
+                      onPressed: () => Navigator.pop(dialogContext, true),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      await context.read<AuthProvider>().signOut();
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.login,
+          (route) => false,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 44.r,
-                    backgroundImage: AssetImage(user.avatarAsset),
+                    backgroundImage: NetworkImage(user.avatarAsset),
                   ),
                   SizedBox(height: 12.h),
                   Text(user.name, style: AppTextStyles.heading3(context)),
@@ -92,16 +169,7 @@ class ProfileScreen extends StatelessWidget {
               Icons.logout_rounded,
               'Log Out',
               color: AppColors.error,
-              onTap: () async {
-                await context.read<AuthProvider>().signOut();
-                if (context.mounted) {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    AppRoutes.login,
-                    (route) => false,
-                  );
-                }
-              },
+              onTap: () => _confirmLogout(context),
             ),
             SizedBox(height: 24.h),
           ],
