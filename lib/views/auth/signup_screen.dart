@@ -45,7 +45,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final authProvider = context.read<AuthProvider>();
-    await authProvider.signUp(
+    final codeSent = await authProvider.signUp(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       phone: _phoneController.text.trim(),
@@ -53,13 +53,16 @@ class _SignupScreenState extends State<SignupScreen> {
       address: _addressController.text.trim(),
     );
 
-    if (!mounted) return;
+    if (!mounted || !codeSent) return;
+
     Navigator.pushNamed(
       context,
       AppRoutes.otpVerification,
       arguments: OtpScreenArgs(
         context: OtpContext.signup,
         identifier: _phoneController.text.trim(),
+        signupName: _nameController.text.trim(),
+        signupEmail: _emailController.text.trim(),
       ),
     );
   }
@@ -141,7 +144,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 SizedBox(height: 28.h),
                 CustomButton(
                   label: 'Create Account',
-                  backgroundColor: AppColors.primary,
+                  //backgroundColor: AppColors.primary,
                   isLoading: isLoading,
                   onPressed: _handleSignup,
                 ),

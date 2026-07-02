@@ -45,13 +45,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (_mode == _LoginMode.email) {
       final success = await authProvider.loginWithEmail(
-          _emailController.text.trim(), _passwordController.text);
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
       if (!mounted || !success) return;
       Navigator.pushNamedAndRemoveUntil(
-          context, AppRoutes.home, (route) => false);
+        context,
+        AppRoutes.home,
+        (route) => false,
+      );
     } else {
-      await authProvider.loginWithPhone(_phoneController.text.trim());
+      final codeSent = await authProvider.loginWithPhone(
+        _phoneController.text.trim(),
+      );
       if (!mounted) return;
+
+      if (!codeSent) {
+        if (authProvider.status == AuthStatus.error)
+          return; // error shown inline already
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.home,
+          (route) => false,
+        );
+        return;
+      }
+
       Navigator.pushNamed(
         context,
         AppRoutes.otpVerification,
@@ -121,11 +140,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () => Navigator.pushNamed(
-                          context, AppRoutes.forgotPassword),
+                        context,
+                        AppRoutes.forgotPassword,
+                      ),
                       child: Text(
                         'Forgot Password?',
-                        style: AppTextStyles.bodySmall(context,
-                            color: AppColors.primary),
+                        style: AppTextStyles.bodySmall(
+                          context,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                   ),
@@ -150,8 +173,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 10.h),
                   Text(
                     authProvider.errorMessage!,
-                    style: AppTextStyles.bodySmall(context,
-                        color: AppColors.error),
+                    style: AppTextStyles.bodySmall(
+                      context,
+                      color: AppColors.error,
+                    ),
                   ),
                 ],
 
@@ -161,8 +186,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     Expanded(child: Divider(color: AppColors.borderLight)),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.w),
-                      child: Text('Or sign up with',
-                          style: AppTextStyles.bodySmall(context)),
+                      child: Text(
+                        'Or sign up with',
+                        style: AppTextStyles.bodySmall(context),
+                      ),
                     ),
                     Expanded(child: Divider(color: AppColors.borderLight)),
                   ],
@@ -182,8 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 20.h),
                 Center(
                   child: GestureDetector(
-                    onTap: () =>
-                        Navigator.pushNamed(context, AppRoutes.signup),
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.signup),
                     child: RichText(
                       text: TextSpan(
                         text: 'Not registered yet? ',
@@ -191,9 +217,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           TextSpan(
                             text: 'Create Account',
-                            style: AppTextStyles.bodyMedium(context,
-                                    color: AppColors.primary)
-                                .copyWith(fontWeight: FontWeight.w700),
+                            style: AppTextStyles.bodyMedium(
+                              context,
+                              color: AppColors.primary,
+                            ).copyWith(fontWeight: FontWeight.w700),
                           ),
                         ],
                       ),

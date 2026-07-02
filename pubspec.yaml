@@ -32,10 +32,13 @@ dependencies:
 
   # Local persistence (login state, theme mode)
   shared_preferences: ^2.3.2
+  simple_month_year_picker: ^1.0.4
 
   # Loading skeletons
   shimmer: ^3.0.0
   cupertino_icons: ^1.0.8
+  firebase_core: ^4.11.0
+  firebase_auth: ^6.5.4
 
 dev_dependencies:
   flutter_test:

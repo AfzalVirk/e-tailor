@@ -33,9 +33,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final authProvider = context.read<AuthProvider>();
-    await authProvider.forgotPassword(_phoneController.text.trim());
+    final codeSent = await authProvider.forgotPassword(
+      _phoneController.text.trim(),
+    );
 
-    if (!mounted) return;
+    if (!mounted || !codeSent) return;
+
     Navigator.pushNamed(
       context,
       AppRoutes.otpVerification,
@@ -102,7 +105,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         SizedBox(height: 20.h),
                         CustomButton(
                           label: 'Continue',
-                          backgroundColor: AppColors.primary,
+                          //backgroundColor: AppColors.primary,
                           isLoading: isLoading,
                           onPressed: _handleContinue,
                         ),

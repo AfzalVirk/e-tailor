@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
-
+import '../../providers/user_provider.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -40,18 +40,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     _startCountdown();
     // Show the mock code once when the screen opens, since it was already
     // "sent" by whichever screen pushed us here (signup/login/forgot).
-    WidgetsBinding.instance.addPostFrameCallback((_) => _showMockCodeBanner());
-  }
-
-  void _showMockCodeBanner() {
-    final code = context.read<AuthProvider>().debugOtp;
-    if (!mounted || code == null) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Demo mode — your OTP is: $code'),
-        duration: const Duration(seconds: 4),
-      ),
-    );
   }
 
   void _startCountdown() {
@@ -86,8 +74,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   Future<void> _handleVerify() async {
     setState(() => _localError = null);
-    if (_otpController.text.length != 4) {
-      setState(() => _localError = 'Enter the full 4-digit code');
+    if (_otpController.text.length != 6) {
+      setState(() => _localError = 'Enter the full 6-digit code');
       return;
     }
 
@@ -101,37 +89,30 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       return;
     }
 
-    switch (widget.args.context) {
-      case OtpContext.signup:
-      case OtpContext.loginPhone:
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.home,
-          (route) => false,
-        );
-        break;
-      case OtpContext.forgotPassword:
-        // Verifying identity isn't the same as being logged in — send
-        // them back to Login rather than straight into the app.
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.login,
-          (route) => false,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Identity confirmed. Please log in.')),
-        );
-        break;
+    if (widget.args.context == OtpContext.signup) {
+      context.read<UserProvider>().updateProfile(
+        name: widget.args.signupName,
+        email: widget.args.signupEmail,
+        phone: widget.args.identifier,
+      );
     }
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutes.home,
+      (route) => false,
+    );
   }
 
   Future<void> _handleResend() async {
-    final code = await context.read<AuthProvider>().resendOtp();
+    final codeSent = await context.read<AuthProvider>().resendOtp();
     if (!mounted) return;
-    _startCountdown();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Demo mode — new OTP is: $code')));
+    if (codeSent) {
+      _startCountdown();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Code re-sent.')));
+    }
   }
 
   @override
@@ -179,7 +160,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       SizedBox(height: 32.h),
                       PinCodeTextField(
                         appContext: context,
-                        length: 4,
+                        length: 6,
                         controller: _otpController,
                         keyboardType: TextInputType.number,
                         animationType: AnimationType.fade,
