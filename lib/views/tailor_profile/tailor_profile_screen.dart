@@ -355,11 +355,10 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
               height: 52.h,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
+                  Navigator.pushNamed(
                     context,
-                    AppRoutes.home,
-                    (route) => false,
-                    arguments: 2, // 2 = Profile tab in MainShell
+                    AppRoutes.measurement,
+                    arguments: widget.tailor,
                   );
                 },
                 style: ElevatedButton.styleFrom(

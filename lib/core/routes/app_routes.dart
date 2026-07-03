@@ -10,6 +10,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String tailorProfile = '/tailor-profile';
   static const String productDetails = '/product-details';
+  static const String measurement = '/measurement';
 
   static const String cart = '/cart';
   static const String checkoutSummary = '/checkout-summary';

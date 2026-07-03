@@ -4,9 +4,6 @@ import '../../core/theme/app_colors.dart';
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
 
-/// Shell that wraps the bottom nav tabs. Named routes that are "inside"
-/// the main app (Home, Orders, Profile) push via this shell rather than
-/// Navigator, keeping the bottom bar visible across them.
 class MainShell extends StatefulWidget {
   final int initialIndex;
   const MainShell({super.key, this.initialIndex = 0});
@@ -142,7 +139,6 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-// Placeholder until Orders screens are built
 class _OrdersPlaceholder extends StatelessWidget {
   const _OrdersPlaceholder();
 

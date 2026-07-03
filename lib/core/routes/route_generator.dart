@@ -15,14 +15,8 @@ import '../../views/product_details/product_details_screen.dart';
 import '../../views/cart/cart_screen.dart';
 import '../../views/checkout/checkout_summary_screen.dart';
 import '../../views/checkout/payment_screen.dart';
+import '../../views/measurements/measurement_screen.dart';
 
-/// Maps every route name to its screen.
-/// Keeping this separate from main.dart means main.dart stays tiny, and
-/// adding a new screen later is a two-line change here instead of touching
-/// MaterialApp's routes table directly.
-///
-/// Usage: Navigator.pushNamed(context, AppRoutes.home);
-/// With arguments: Navigator.pushNamed(context, AppRoutes.productDetails, arguments: product);
 class RouteGenerator {
   RouteGenerator._();
 
@@ -70,7 +64,9 @@ class RouteGenerator {
         }
         return _build(TailorProfileScreen(tailor: tailor), settings);
 
-      // Remaining screens (tailor profile, product details etc.) added below.
+      case AppRoutes.measurement:
+        final tailor = settings.arguments as TailorModel?;
+        return _build(MeasurementScreen(tailor: tailor), settings);
 
       case AppRoutes.editProfile:
         return _build(const EditProfileScreen(), settings);

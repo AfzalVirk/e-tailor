@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../core/theme/app_colors.dart';
 
-/// Reusable text input used across every form screen (login, signup,
-/// forgot password, edit profile...). Built once here so styling and
-/// validation behavior stay consistent everywhere instead of being
-/// re-styled per screen.
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
@@ -14,6 +10,9 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final int maxLines;
+  final bool readOnly;
+  final VoidCallback? onTap;
 
   const CustomTextField({
     super.key,
@@ -24,6 +23,9 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.prefixIcon,
     this.suffixIcon,
+    this.maxLines = 1,
+    this.readOnly = false,
+    this.onTap,
   });
 
   @override
@@ -33,6 +35,9 @@ class CustomTextField extends StatelessWidget {
       keyboardType: keyboardType,
       obscureText: obscureText,
       validator: validator,
+      readOnly: readOnly,
+      onTap: onTap,
+      maxLines: obscureText ? 1 : maxLines,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       style: TextStyle(fontSize: 14.sp),
       decoration: InputDecoration(
@@ -43,6 +48,7 @@ class CustomTextField extends StatelessWidget {
         ),
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
+        alignLabelWithHint: true,
         contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
       ),
     );
