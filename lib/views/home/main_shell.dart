@@ -3,6 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/theme/app_colors.dart';
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
+import '../chat/chat_list_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../models/conversation_model.dart';
+import '../../services/chat_service.dart';
 
 class MainShell extends StatefulWidget {
   final int initialIndex;
@@ -18,6 +22,7 @@ class _MainShellState extends State<MainShell> {
   final List<Widget> _screens = const [
     HomeScreen(),
     _OrdersPlaceholder(),
+    ChatListScreen(),
     ProfileScreen(),
   ];
 
@@ -70,11 +75,29 @@ class _CustomBottomNav extends StatelessWidget {
                 isSelected: currentIndex == 1,
                 onTap: () => onTap(1),
               ),
+              StreamBuilder<List<ConversationModel>>(
+                stream: FirebaseAuth.instance.currentUser != null
+                    ? ChatService.streamConversations(
+                        FirebaseAuth.instance.currentUser!.uid,
+                      )
+                    : const Stream.empty(),
+                builder: (context, snapshot) {
+                  final hasUnread =
+                      snapshot.data?.any((c) => c.hasUnread) ?? false;
+                  return _NavItem(
+                    icon: Icons.chat_bubble_outline_rounded,
+                    label: 'Messages',
+                    isSelected: currentIndex == 2,
+                    onTap: () => onTap(2),
+                    showDot: hasUnread,
+                  );
+                },
+              ),
               _NavItem(
                 icon: Icons.person_rounded,
                 label: 'Profile',
-                isSelected: currentIndex == 2,
-                onTap: () => onTap(2),
+                isSelected: currentIndex == 3,
+                onTap: () => onTap(3),
               ),
             ],
           ),
@@ -89,12 +112,14 @@ class _NavItem extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
+  final bool showDot;
 
   const _NavItem({
     required this.icon,
     required this.label,
     required this.isSelected,
     required this.onTap,
+    this.showDot = false,
   });
 
   @override
@@ -114,12 +139,30 @@ class _NavItem extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.textSecondaryLight,
-              size: 24.sp,
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  icon,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.textSecondaryLight,
+                  size: 24.sp,
+                ),
+                if (showDot)
+                  Positioned(
+                    top: -2,
+                    right: -2,
+                    child: Container(
+                      width: 8.w,
+                      height: 8.w,
+                      decoration: const BoxDecoration(
+                        color: AppColors.accent,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
             ),
             SizedBox(height: 2.h),
             Text(

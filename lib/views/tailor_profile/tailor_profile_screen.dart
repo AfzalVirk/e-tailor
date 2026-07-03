@@ -6,6 +6,10 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/tailor_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/chat_service.dart';
+import '../chat/chat_thread_args.dart';
+import '../chat/chat_thread_screen.dart';
 
 class TailorProfileScreen extends StatefulWidget {
   final TailorModel tailor;
@@ -337,16 +341,43 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
       ),
       child: Row(
         children: [
-          Container(
-            padding: EdgeInsets.all(14.r),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(14.r),
-            ),
-            child: Icon(
-              Icons.chat_bubble_outline_rounded,
-              color: AppColors.primary,
-              size: 20.sp,
+          GestureDetector(
+            onTap: () async {
+              final uid = FirebaseAuth.instance.currentUser?.uid;
+              if (uid == null) return;
+
+              final conversationId = await ChatService.ensureConversation(
+                customerUid: uid,
+                tailorId: widget.tailor.id,
+                tailorName: widget.tailor.name,
+                tailorImage: widget.tailor.imagePath,
+              );
+
+              if (!context.mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChatThreadScreen(
+                    args: ChatThreadArgs(
+                      conversationId: conversationId,
+                      tailorName: widget.tailor.name,
+                      tailorImage: widget.tailor.imagePath,
+                    ),
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.all(14.r),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(14.r),
+              ),
+              child: Icon(
+                Icons.chat_bubble_outline_rounded,
+                color: AppColors.primary,
+                size: 20.sp,
+              ),
             ),
           ),
           SizedBox(width: 12.w),

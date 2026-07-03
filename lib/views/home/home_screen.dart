@@ -10,6 +10,7 @@ import '../../providers/user_provider.dart';
 import '../../widgets/app_logo.dart';
 import '../../widgets/product_card.dart';
 import '../../widgets/tailor_card.dart';
+import '../../widgets/tailor_list_tile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
+  bool _showAllTailors = false;
 
   Widget _buildTailorSection(BuildContext context, HomeProvider homeProvider) {
     if (homeProvider.isLoading) {
@@ -62,12 +64,33 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
+    if (_showAllTailors) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Column(
+          children: [
+            for (final tailor in homeProvider.tailors) ...[
+              TailorListTile(
+                tailor: tailor,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  AppRoutes.tailorProfile,
+                  arguments: tailor,
+                ),
+              ),
+              SizedBox(height: 10.h),
+            ],
+          ],
+        ),
+      );
+    }
+
     return SizedBox(
       height: 190.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.only(left: 20.w),
-        itemCount: homeProvider.tailors.length,
+        itemCount: homeProvider.tailors.take(4).length,
         itemBuilder: (context, index) {
           final tailor = homeProvider.tailors[index];
           return TailorCard(
@@ -169,9 +192,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: AppTextStyles.heading3(context),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () => setState(
+                            () => _showAllTailors = !_showAllTailors,
+                          ),
                           child: Text(
-                            'See All',
+                            _showAllTailors ? 'Show Less' : 'See All',
                             style: AppTextStyles.bodySmall(
                               context,
                               color: AppColors.primary,

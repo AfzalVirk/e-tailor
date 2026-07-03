@@ -17,6 +17,9 @@ import '../../views/checkout/checkout_summary_screen.dart';
 import '../../views/checkout/payment_screen.dart';
 import '../../views/measurements/measurement_screen.dart';
 
+import '../../views/chat/chat_thread_screen.dart';
+import '../../views/chat/chat_thread_args.dart';
+
 class RouteGenerator {
   RouteGenerator._();
 
@@ -91,6 +94,16 @@ class RouteGenerator {
 
       case AppRoutes.payment:
         return _build(const PaymentScreen(), settings);
+
+      case AppRoutes.chatThread:
+        final args = settings.arguments as ChatThreadArgs?;
+        if (args == null) {
+          return _build(
+            const Scaffold(body: Center(child: Text('Missing chat arguments'))),
+            settings,
+          );
+        }
+        return _build(ChatThreadScreen(args: args), settings);
 
       default:
         return _build(
