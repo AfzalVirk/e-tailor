@@ -5,6 +5,7 @@ import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/tailor_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class TailorProfileScreen extends StatefulWidget {
   final TailorModel tailor;
@@ -170,7 +171,25 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
               border: Border.all(color: AppColors.gold, width: 2.5),
             ),
             child: ClipOval(
-              child: Image.asset(tailor.imagePath, fit: BoxFit.cover),
+              child: CachedNetworkImage(
+                imageUrl: tailor.imagePath,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Center(
+                  child: SizedBox(
+                    width: 24.w,
+                    height: 24.w,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Icon(
+                  Icons.person,
+                  color: AppColors.textSecondaryLight,
+                  size: 32.sp,
+                ),
+              ),
             ),
           ),
           SizedBox(height: 12.h),

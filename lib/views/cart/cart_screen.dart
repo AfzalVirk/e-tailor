@@ -8,6 +8,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../providers/cart_provider.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/order_progress_stepper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -70,11 +71,37 @@ class CartScreen extends StatelessWidget {
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(10.r),
-                                child: Image.asset(
-                                  item.product.imagePath,
+                                child: CachedNetworkImage(
+                                  imageUrl: item.product.imagePath,
                                   width: 60.w,
                                   height: 60.w,
                                   fit: BoxFit.cover,
+                                  placeholder: (context, url) => Container(
+                                    width: 60.w,
+                                    height: 60.w,
+                                    color: AppColors.backgroundLight,
+                                    child: Center(
+                                      child: SizedBox(
+                                        width: 18.w,
+                                        height: 18.w,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                        width: 60.w,
+                                        height: 60.w,
+                                        color: AppColors.backgroundLight,
+                                        child: Icon(
+                                          Icons.image_not_supported_outlined,
+                                          color: AppColors.textSecondaryLight,
+                                          size: 20.sp,
+                                        ),
+                                      ),
                                 ),
                               ),
                               SizedBox(width: 12.w),

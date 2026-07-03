@@ -7,6 +7,7 @@ import '../../models/product_model.dart';
 import '../../providers/cart_provider.dart';
 import '../../widgets/custom_button.dart';
 import '../../core/routes/app_routes.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final ProductModel product;
@@ -44,11 +45,31 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 children: [
                   Stack(
                     children: [
-                      Image.asset(
-                        product.imagePath,
+                      CachedNetworkImage(
+                        imageUrl: product.imagePath,
                         width: double.infinity,
                         height: 320.h,
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          width: double.infinity,
+                          height: 320.h,
+                          color: AppColors.backgroundLight,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          width: double.infinity,
+                          height: 320.h,
+                          color: AppColors.backgroundLight,
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            color: AppColors.textSecondaryLight,
+                            size: 40.sp,
+                          ),
+                        ),
                       ),
                       Positioned(
                         top: 12.h,

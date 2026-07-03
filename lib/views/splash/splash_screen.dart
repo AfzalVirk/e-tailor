@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../widgets/app_logo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// First screen shown on app launch. Fades in the logo, waits briefly,
 /// then moves to Login. Later this will check SharedPreferences via
@@ -34,7 +35,16 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _navigateNext() async {
     await Future.delayed(const Duration(milliseconds: 2200));
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, AppRoutes.login);
+
+    final user = await FirebaseAuth.instance.authStateChanges().first;
+
+    if (!mounted) return;
+
+    if (user != null) {
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+    }
   }
 
   @override

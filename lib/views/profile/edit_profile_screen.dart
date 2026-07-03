@@ -8,6 +8,9 @@ import '../../core/utils/validators.dart';
 import '../../providers/user_provider.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import '../../services/cloudinary_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -22,6 +25,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
   final _passwordController = TextEditingController();
+  bool _isUploadingPhoto = false;
+
+  Future<void> _pickAndUploadPhoto() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+    if (picked == null) return;
+
+    setState(() => _isUploadingPhoto = true);
+
+    final url = await CloudinaryService.uploadImage(File(picked.path));
+
+    if (!mounted) return;
+    setState(() => _isUploadingPhoto = false);
+
+    if (url == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to upload photo. Try again.')),
+      );
+      return;
+    }
+
+    await context.read<UserProvider>().updateProfile(avatarUrl: url);
+  }
 
   @override
   void initState() {
@@ -41,15 +70,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
-  void _handleUpdate() {
+  Future<void> _handleUpdate() async {
     if (!_formKey.currentState!.validate()) return;
 
-    context.read<UserProvider>().updateProfile(
+    await context.read<UserProvider>().updateProfile(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       phone: _phoneController.text.trim(),
     );
 
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile updated successfully')),
     );
@@ -95,23 +125,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 44.r,
-                        backgroundImage: NetworkImage(
-                          user.avatarAsset,
-                        ), // was: AssetImage(...)
+                        backgroundImage: NetworkImage(user.avatarAsset),
                       ),
+                      if (_isUploadingPhoto)
+                        Positioned.fill(
+                          child: CircleAvatar(
+                            radius: 44.r,
+                            backgroundColor: Colors.black.withOpacity(0.4),
+                            child: const CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       Positioned(
                         bottom: 0,
                         right: 0,
-                        child: Container(
-                          padding: EdgeInsets.all(6.r),
-                          decoration: const BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt_outlined,
-                            color: Colors.white,
-                            size: 16,
+                        child: GestureDetector(
+                          onTap: _isUploadingPhoto ? null : _pickAndUploadPhoto,
+                          child: Container(
+                            padding: EdgeInsets.all(6.r),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt_outlined,
+                              color: Colors.white,
+                              size: 16,
+                            ),
                           ),
                         ),
                       ),
@@ -120,11 +161,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 SizedBox(height: 8.h),
                 Center(
-                  child: Text(
-                    'Change Picture',
-                    style: AppTextStyles.bodySmall(
-                      context,
-                      color: AppColors.primary,
+                  child: GestureDetector(
+                    onTap: _isUploadingPhoto ? null : _pickAndUploadPhoto,
+                    child: Text(
+                      'Change Picture',
+                      style: AppTextStyles.bodySmall(
+                        context,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ),

@@ -1,6 +1,3 @@
-/// All route names live here as constants — never hardcode a route string
-/// like '/home' inside a screen. This is the single source of truth, and it
-/// means a typo becomes a compile-time error instead of a silent navigation bug.
 class AppRoutes {
   AppRoutes._();
 
