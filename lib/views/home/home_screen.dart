@@ -21,6 +21,68 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
 
+  Widget _buildTailorSection(BuildContext context, HomeProvider homeProvider) {
+    if (homeProvider.isLoading) {
+      return SizedBox(
+        height: 190.h,
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (homeProvider.errorMessage != null) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+        child: Column(
+          children: [
+            Text(
+              homeProvider.errorMessage!,
+              style: AppTextStyles.bodyMedium(context),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 8.h),
+            TextButton(
+              onPressed: homeProvider.refreshTailors,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (homeProvider.tailors.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+        child: Center(
+          child: Text(
+            'No tailors found for "${homeProvider.searchQuery}"',
+            style: AppTextStyles.bodyMedium(context),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 190.h,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.only(left: 20.w),
+        itemCount: homeProvider.tailors.length,
+        itemBuilder: (context, index) {
+          final tailor = homeProvider.tailors[index];
+          return TailorCard(
+            tailor: tailor,
+            onTap: () => Navigator.pushNamed(
+              context,
+              AppRoutes.tailorProfile,
+              arguments: tailor,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -126,39 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // ── Tailor carousel ──
             SliverToBoxAdapter(
-              child: homeProvider.tailors.isEmpty
-                  ? Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20.w,
-                        vertical: 20.h,
-                      ),
-                      child: Center(
-                        child: Text(
-                          'No tailors found for "${homeProvider.searchQuery}"',
-                          style: AppTextStyles.bodyMedium(context),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    )
-                  : SizedBox(
-                      height: 190.h,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.only(left: 20.w),
-                        itemCount: homeProvider.tailors.length,
-                        itemBuilder: (context, index) {
-                          final tailor = homeProvider.tailors[index];
-                          return TailorCard(
-                            tailor: tailor,
-                            onTap: () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.tailorProfile,
-                              arguments: tailor,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+              child: _buildTailorSection(context, homeProvider),
             ),
 
             // ── Featured collection heading ──
