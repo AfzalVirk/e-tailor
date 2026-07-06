@@ -7,14 +7,10 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/utils/validators.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/user_provider.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
-import 'otp_screen_args.dart';
 
-/// Signup form. Note: the original Figma included a "PAN number" field
-/// (an India-specific tax ID) — dropped here since it doesn't fit a
-/// general-audience tailor app. Add it back easily if your sir specifically
-/// wants the form to match the Figma 1:1.
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -30,6 +26,15 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passwordController = TextEditingController();
   final _addressController = TextEditingController();
   bool _obscurePassword = true;
+  String? _selectedRole;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthProvider>().clearError();
+    });
+  }
 
   @override
   void dispose() {
@@ -41,19 +46,11 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AuthProvider>().clearError();
-    });
-  }
-
   Future<void> _handleSignup() async {
     if (!_formKey.currentState!.validate()) return;
 
     final authProvider = context.read<AuthProvider>();
-    final codeSent = await authProvider.signUp(
+    final success = await authProvider.signUp(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       phone: _phoneController.text.trim(),
@@ -61,17 +58,20 @@ class _SignupScreenState extends State<SignupScreen> {
       address: _addressController.text.trim(),
     );
 
-    if (!mounted || !codeSent) return;
+    if (!mounted || !success) return;
 
-    Navigator.pushNamed(
+    await context.read<UserProvider>().updateProfile(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      phone: _phoneController.text.trim(),
+      role: _selectedRole,
+    );
+
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(
       context,
-      AppRoutes.otpVerification,
-      arguments: OtpScreenArgs(
-        context: OtpContext.signup,
-        identifier: _phoneController.text.trim(),
-        signupName: _nameController.text.trim(),
-        signupEmail: _emailController.text.trim(),
-      ),
+      AppRoutes.emailVerification,
+      (route) => false,
     );
   }
 
@@ -149,10 +149,37 @@ class _SignupScreenState extends State<SignupScreen> {
                   validator: (v) =>
                       Validators.required(v, fieldName: 'Address'),
                 ),
+                SizedBox(height: 14.h),
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedRole,
+                  decoration: InputDecoration(
+                    hintText: 'Select account type',
+                    hintStyle: TextStyle(
+                      fontSize: 14.sp,
+                      color: AppColors.textSecondaryLight,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 16.h,
+                      horizontal: 16.w,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'customer',
+                      child: Text('Customer'),
+                    ),
+                    DropdownMenuItem(value: 'tailor', child: Text('Tailor')),
+                  ],
+                  onChanged: (value) => setState(() => _selectedRole = value),
+                  validator: (value) =>
+                      value == null ? 'Please select an account type' : null,
+                ),
                 SizedBox(height: 28.h),
                 CustomButton(
                   label: 'Create Account',
-                  //backgroundColor: AppColors.primary,
                   isLoading: isLoading,
                   onPressed: _handleSignup,
                 ),

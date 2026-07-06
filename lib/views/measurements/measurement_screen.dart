@@ -140,7 +140,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     // unassigned if opened from the tab), then send it to the tailor.
 
     final message = widget.tailor != null
-        ? 'Sent to ${widget.tailor!.name}. They\'ll confirm your order shortly.'
+        ? 'Sent to ${widget.tailor!.ownerName}. They\'ll confirm your order shortly.'
         : 'Measurement details saved.';
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -272,19 +272,19 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
                 Row(
                   children: [
                     Text(
-                      tailor.name,
+                      tailor.ownerName,
                       style: AppTextStyles.bodyMedium(
                         context,
                       ).copyWith(fontWeight: FontWeight.w600),
                     ),
-                    if (tailor.isVerified) ...[
-                      SizedBox(width: 4.w),
-                      Icon(
-                        Icons.verified,
-                        color: AppColors.primary,
-                        size: 14.sp,
-                      ),
-                    ],
+                    //if (tailor.isVerified) ...[
+                    //SizedBox(width: 4.w),
+                    //Icon(
+                    //Icons.verified,
+                    //color: AppColors.primary,
+                    //size: 14.sp,
+                    //),
+                    //],
                   ],
                 ),
                 Text(

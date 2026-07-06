@@ -51,8 +51,8 @@ class HomeProvider extends ChangeNotifier {
       _filteredTailors = _allTailors
           .where(
             (t) =>
-                t.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                t.location.toLowerCase().contains(_searchQuery.toLowerCase()),
+                t.shopName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                t.address.toLowerCase().contains(_searchQuery.toLowerCase()),
           )
           .toList();
     }

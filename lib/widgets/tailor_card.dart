@@ -64,30 +64,13 @@ class TailorCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (tailor.isVerified)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: EdgeInsets.all(2.r),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.verified,
-                        color: AppColors.primary,
-                        size: 16.sp,
-                      ),
-                    ),
-                  ),
               ],
             ),
             SizedBox(height: 10.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.w),
               child: Text(
-                tailor.name,
+                tailor.shopName,
                 style: AppTextStyles.bodySmall(
                   context,
                 ).copyWith(fontWeight: FontWeight.w600, fontSize: 11.sp),
@@ -109,13 +92,6 @@ class TailorCard extends StatelessWidget {
                   ).copyWith(fontSize: 11.sp),
                 ),
               ],
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              '${tailor.totalOrders} orders',
-              style: AppTextStyles.bodySmall(
-                context,
-              ).copyWith(fontSize: 10.sp, color: AppColors.textSecondaryLight),
             ),
             SizedBox(height: 12.h),
           ],

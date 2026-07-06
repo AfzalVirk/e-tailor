@@ -1,42 +1,23 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/tailor_model.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/chat_service.dart';
 import '../chat/chat_thread_args.dart';
 import '../chat/chat_thread_screen.dart';
 
-class TailorProfileScreen extends StatefulWidget {
+class TailorProfileScreen extends StatelessWidget {
   final TailorModel tailor;
-
   const TailorProfileScreen({super.key, required this.tailor});
 
   @override
-  State<TailorProfileScreen> createState() => _TailorProfileScreenState();
-}
-
-class _TailorProfileScreenState extends State<TailorProfileScreen> {
-  int _selectedCategory =
-      2; // "Fabric" highlighted, matches Figma's default state
-
-  static const _categories = ['Clothing', 'Accessories', 'Fabric', 'Wearable'];
-
-  static const _services = [
-    ('Tops', 7),
-    ('Bottoms', 4),
-    ('Full Outfits', 8),
-    ('Alterations', 4),
-  ];
-
-  @override
   Widget build(BuildContext context) {
-    final tailor = widget.tailor;
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -45,89 +26,9 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  _buildHeader(context, tailor),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20.h),
-                        _sectionHeader(context, 'Description'),
-                        SizedBox(height: 6.h),
-                        Text(
-                          tailor.description,
-                          style: AppTextStyles.bodyMedium(
-                            context,
-                            color: AppColors.textSecondaryLight,
-                          ),
-                        ),
-                        SizedBox(height: 24.h),
-                        _sectionHeader(context, 'Ratings & Reviews'),
-                        SizedBox(height: 10.h),
-                        _buildReview(
-                          context,
-                          name: 'Arista',
-                          stars: 5,
-                          comment:
-                              'Great work and very professional. Delivered right on time and the stitching quality was excellent.',
-                        ),
-                        SizedBox(height: 24.h),
-                        Text(
-                          'Tailoring & Alteration Services',
-                          style: AppTextStyles.heading3(context),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: 14.h),
-                      ],
-                    ),
-                  ),
-                  ..._services.map(
-                    (s) => Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20.w,
-                        vertical: 6.h,
-                      ),
-                      child: _serviceTile(context, s.$1, s.$2),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: Text(
-                      "${tailor.name}'s Collection",
-                      style: AppTextStyles.heading3(context),
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: Wrap(
-                      spacing: 8.w,
-                      children: List.generate(_categories.length, (i) {
-                        final selected = i == _selectedCategory;
-                        return ChoiceChip(
-                          label: Text(_categories[i]),
-                          selected: selected,
-                          onSelected: (_) =>
-                              setState(() => _selectedCategory = i),
-                          selectedColor: AppColors.primary,
-                          labelStyle: TextStyle(
-                            color: selected
-                                ? Colors.white
-                                : AppColors.textPrimaryLight,
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          backgroundColor: AppColors.backgroundLight,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.r),
-                            side: BorderSide.none,
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
+                  _buildHeader(context),
+                  _buildInfoSection(context),
+                  _buildReviewsSection(context),
                 ],
               ),
             ),
@@ -138,91 +39,139 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, TailorModel tailor) {
+  // ── Header: shop image gallery + shop name + owner name + rating + address
+  Widget _buildHeader(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 20.h),
       color: AppColors.primary.withOpacity(0.06),
       child: Column(
         children: [
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back_rounded),
-                color: AppColors.textPrimaryLight,
-                onPressed: () => Navigator.pop(context),
-              ),
-              Expanded(
-                child: Text(
-                  'Profile',
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.heading3(context),
+          // App bar row
+          Padding(
+            padding: EdgeInsets.fromLTRB(4.w, 8.h, 4.w, 0),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  color: AppColors.textPrimaryLight,
+                  onPressed: () => Navigator.pop(context),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.ios_share_rounded),
-                color: AppColors.textPrimaryLight,
-                onPressed: () {},
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-          Container(
-            width: 84.w,
-            height: 84.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.gold, width: 2.5),
+                Expanded(
+                  child: Text(
+                    'Tailor Profile',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.heading3(context),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.ios_share_rounded),
+                  color: AppColors.textPrimaryLight,
+                  onPressed: () {},
+                ),
+              ],
             ),
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: tailor.imagePath,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Center(
+          ),
+
+          SizedBox(height: 8.h),
+
+          // Cover gallery + overlapping avatar
+          Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.bottomCenter,
+            children: [
+              if (tailor.shopImages.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16.r),
                   child: SizedBox(
-                    width: 24.w,
-                    height: 24.w,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primary,
+                    height: 160.h,
+                    width: double.infinity,
+                    child: PageView.builder(
+                      itemCount: tailor.shopImages.length,
+                      itemBuilder: (context, index) {
+                        return CachedNetworkImage(
+                          imageUrl: tailor.shopImages[index],
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: AppColors.backgroundLight,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primary,
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            color: AppColors.backgroundLight,
+                            child: Icon(
+                              Icons.store_rounded,
+                              color: AppColors.textSecondaryLight,
+                              size: 48.sp,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
-                errorWidget: (context, url, error) => Icon(
-                  Icons.person,
-                  color: AppColors.textSecondaryLight,
-                  size: 32.sp,
+
+              // Avatar, overlapping the bottom edge of the gallery
+              Positioned(
+                bottom: -40.h,
+                child: Container(
+                  width: 84.w,
+                  height: 84.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.gold, width: 2.5),
+                    color: AppColors.backgroundLight,
+                  ),
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: tailor.imagePath,
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => Icon(
+                        Icons.person,
+                        color: AppColors.textSecondaryLight,
+                        size: 32.sp,
+                      ),
+                    ),
+                  ),
                 ),
               ),
+            ],
+          ),
+
+          // Space to make room for the overlapping avatar below the gallery
+          SizedBox(height: 48.h),
+
+          // Shop name
+          Text(tailor.shopName, style: AppTextStyles.heading2(context)),
+          SizedBox(height: 4.h),
+
+          // Owner name
+          Text(
+            'Owner: ${tailor.ownerName}',
+            style: AppTextStyles.bodyMedium(
+              context,
+              color: AppColors.textSecondaryLight,
             ),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 6.h),
+
+          // Rating
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(tailor.name, style: AppTextStyles.heading3(context)),
-              if (tailor.isVerified) ...[
-                SizedBox(width: 6.w),
-                Icon(Icons.verified, color: AppColors.primary, size: 16.sp),
-              ],
+              Icon(Icons.star_rounded, color: AppColors.gold, size: 16.sp),
+              SizedBox(width: 4.w),
+              Text(
+                tailor.rating.toString(),
+                style: AppTextStyles.bodyMedium(context),
+              ),
             ],
           ),
           SizedBox(height: 6.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.star_rounded, color: AppColors.gold, size: 15.sp),
-              SizedBox(width: 3.w),
-              Text(
-                '${tailor.rating}  •  ${tailor.totalOrders} orders',
-                style: AppTextStyles.bodySmall(
-                  context,
-                  color: AppColors.textSecondaryLight,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 4.h),
+
+          // Address
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -232,35 +181,143 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
                 color: AppColors.textSecondaryLight,
               ),
               SizedBox(width: 3.w),
-              Text(
-                tailor.location,
-                style: AppTextStyles.bodySmall(
-                  context,
-                  color: AppColors.textSecondaryLight,
+              Flexible(
+                child: Text(
+                  tailor.address,
+                  style: AppTextStyles.bodySmall(
+                    context,
+                    color: AppColors.textSecondaryLight,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],
+          ),
+          SizedBox(height: 20.h),
+        ],
+      ),
+    );
+  }
+
+  // ── Info section: experience, working hours, contact
+  Widget _buildInfoSection(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(20.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Shop Info', style: AppTextStyles.heading3(context)),
+          SizedBox(height: 14.h),
+          _infoRow(
+            context,
+            icon: Icons.workspace_premium_rounded,
+            label: 'Experience',
+            value: tailor.experience,
+          ),
+          SizedBox(height: 12.h),
+          _infoRow(
+            context,
+            icon: Icons.access_time_rounded,
+            label: 'Working Hours',
+            value: tailor.workingHours,
+          ),
+          SizedBox(height: 12.h),
+          _infoRow(
+            context,
+            icon: Icons.phone_outlined,
+            label: 'Contact',
+            value: tailor.phone,
           ),
         ],
       ),
     );
   }
 
-  Widget _sectionHeader(BuildContext context, String title) {
-    return Text(title, style: AppTextStyles.heading3(context));
+  Widget _infoRow(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(8.r),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          child: Icon(icon, color: AppColors.primary, size: 18.sp),
+        ),
+        SizedBox(width: 12.w),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: AppTextStyles.bodySmall(
+                context,
+                color: AppColors.textSecondaryLight,
+              ),
+            ),
+            Text(
+              value.isNotEmpty ? value : 'Not specified',
+              style: AppTextStyles.bodyMedium(context),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
-  Widget _buildReview(
-    BuildContext context, {
-    required String name,
-    required int stars,
-    required String comment,
-  }) {
+  // ── Reviews section
+  Widget _buildReviewsSection(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Ratings & Reviews', style: AppTextStyles.heading3(context)),
+              Text(
+                '${tailor.rating} ★',
+                style: AppTextStyles.bodyMedium(
+                  context,
+                  color: AppColors.gold,
+                ).copyWith(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          SizedBox(height: 14.h),
+          if (tailor.reviews.isEmpty)
+            Text(
+              'No reviews yet.',
+              style: AppTextStyles.bodyMedium(
+                context,
+                color: AppColors.textSecondaryLight,
+              ),
+            )
+          else
+            ...tailor.reviews.map(
+              (r) => Padding(
+                padding: EdgeInsets.only(bottom: 14.h),
+                child: _buildReviewItem(context, r),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewItem(BuildContext context, Map<String, dynamic> review) {
+    final stars = (review['stars'] as num?)?.toInt() ?? 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          name,
+          review['name'] as String? ?? '',
           style: AppTextStyles.bodyMedium(
             context,
           ).copyWith(fontWeight: FontWeight.w600),
@@ -271,14 +328,14 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
             5,
             (i) => Icon(
               Icons.star_rounded,
-              size: 14.sp,
+              size: 13.sp,
               color: i < stars ? AppColors.gold : AppColors.borderLight,
             ),
           ),
         ),
         SizedBox(height: 4.h),
         Text(
-          comment,
+          review['comment'] as String? ?? '',
           style: AppTextStyles.bodySmall(
             context,
             color: AppColors.textSecondaryLight,
@@ -288,44 +345,7 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
     );
   }
 
-  Widget _serviceTile(BuildContext context, String label, int orders) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label.toUpperCase(),
-                style: AppTextStyles.bodyMedium(
-                  context,
-                ).copyWith(fontWeight: FontWeight.w700, fontSize: 13.sp),
-              ),
-              SizedBox(height: 2.h),
-              Text(
-                'Order $orders • work time ~2 days',
-                style: AppTextStyles.bodySmall(
-                  context,
-                  color: AppColors.textSecondaryLight,
-                ),
-              ),
-            ],
-          ),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.textSecondaryLight,
-          ),
-        ],
-      ),
-    );
-  }
-
+  // ── Bottom bar: Order Now | Chat | Call
   Widget _buildBottomBar(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
@@ -341,18 +361,19 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
       ),
       child: Row(
         children: [
-          GestureDetector(
+          // Chat button
+          _iconButton(
+            context,
+            icon: Icons.chat_bubble_outline_rounded,
             onTap: () async {
               final uid = FirebaseAuth.instance.currentUser?.uid;
               if (uid == null) return;
-
               final conversationId = await ChatService.ensureConversation(
                 customerUid: uid,
-                tailorId: widget.tailor.id,
-                tailorName: widget.tailor.name,
-                tailorImage: widget.tailor.imagePath,
+                tailorId: tailor.id,
+                tailorName: tailor.shopName,
+                tailorImage: tailor.imagePath,
               );
-
               if (!context.mounted) return;
               Navigator.push(
                 context,
@@ -360,38 +381,39 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
                   builder: (_) => ChatThreadScreen(
                     args: ChatThreadArgs(
                       conversationId: conversationId,
-                      tailorName: widget.tailor.name,
-                      tailorImage: widget.tailor.imagePath,
+                      tailorName: tailor.shopName,
+                      tailorImage: tailor.imagePath,
                     ),
                   ),
                 ),
               );
             },
-            child: Container(
-              padding: EdgeInsets.all(14.r),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(14.r),
-              ),
-              child: Icon(
-                Icons.chat_bubble_outline_rounded,
-                color: AppColors.primary,
-                size: 20.sp,
-              ),
-            ),
           ),
-          SizedBox(width: 12.w),
+          SizedBox(width: 10.w),
+
+          // Call button
+          _iconButton(
+            context,
+            icon: Icons.call_rounded,
+            onTap: () async {
+              final uri = Uri(scheme: 'tel', path: tailor.phone);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri);
+              }
+            },
+          ),
+          SizedBox(width: 10.w),
+
+          // Order Now button
           Expanded(
             child: SizedBox(
               height: 52.h,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.measurement,
-                    arguments: widget.tailor,
-                  );
-                },
+                onPressed: () => Navigator.pushNamed(
+                  context,
+                  AppRoutes.measurement,
+                  arguments: tailor,
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accent,
                   shape: RoundedRectangleBorder(
@@ -399,13 +421,31 @@ class _TailorProfileScreenState extends State<TailorProfileScreen> {
                   ),
                 ),
                 child: Text(
-                  'Order',
+                  'Order Now',
                   style: AppTextStyles.button(context, color: Colors.white),
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _iconButton(
+    BuildContext context, {
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(14.r),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(14.r),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 20.sp),
       ),
     );
   }

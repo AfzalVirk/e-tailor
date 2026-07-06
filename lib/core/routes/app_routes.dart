@@ -2,10 +2,15 @@ class AppRoutes {
   AppRoutes._();
 
   static const String splash = '/';
+
+  static const String roleRouter = '/role-router';
+  static const String tailorHome = '/tailor-home';
+
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
-  static const String otpVerification = '/otp-verification';
+  static const String emailVerification = '/email-verification';
+  static const String passwordResetSent = '/password-reset-sent';
 
   static const String home = '/home';
   static const String tailorProfile = '/tailor-profile';

@@ -18,12 +18,14 @@ class UserProvider extends ChangeNotifier {
   String _phone = '';
   String _avatarAsset = _defaultAvatar;
   bool _isLoading = false;
+  String _role = 'customer';
 
   String get name => _name;
   String get email => _email;
   String get phone => _phone;
   String get avatarAsset => _avatarAsset;
   bool get isLoading => _isLoading;
+  String get role => _role;
 
   UserProvider() {
     _authSub = _auth.authStateChanges().listen(_onAuthChanged);
@@ -54,6 +56,7 @@ class UserProvider extends ChangeNotifier {
       _email = data['email'] ?? _auth.currentUser?.email ?? '';
       _phone = data['phone'] ?? '';
       _avatarAsset = data['avatarUrl'] ?? _defaultAvatar;
+      _role = data['role'] ?? 'customer';
     } else {
       // First time we've seen this account — create a starter document.
       _name = _auth.currentUser?.displayName ?? '';
@@ -77,11 +80,13 @@ class UserProvider extends ChangeNotifier {
     String? email,
     String? phone,
     String? avatarUrl,
+    String? role,
   }) async {
     if (name != null) _name = name;
     if (email != null) _email = email;
     if (phone != null) _phone = phone;
     if (avatarUrl != null) _avatarAsset = avatarUrl;
+    if (role != null) _role = role;
     notifyListeners();
 
     final uid = _auth.currentUser?.uid;
@@ -92,6 +97,7 @@ class UserProvider extends ChangeNotifier {
       'email': _email,
       'phone': _phone,
       'avatarUrl': _avatarAsset,
+      'role': _role,
     }, SetOptions(merge: true));
   }
 

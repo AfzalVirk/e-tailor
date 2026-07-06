@@ -37,11 +37,10 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
     final user = await FirebaseAuth.instance.authStateChanges().first;
-
     if (!mounted) return;
 
     if (user != null) {
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
+      Navigator.pushReplacementNamed(context, AppRoutes.roleRouter);
     } else {
       Navigator.pushReplacementNamed(context, AppRoutes.login);
     }

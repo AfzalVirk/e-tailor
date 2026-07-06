@@ -4,58 +4,118 @@ import '../models/product_model.dart';
 class MockDataService {
   MockDataService._();
 
-  static List<TailorModel> getTailors() => const [
+  static List<TailorModel> getTailors() => [
     TailorModel(
       id: 't1',
-      name: 'Stitch & Style',
+      shopName: 'Stitch & Style',
+      ownerName: 'Ahmed Raza',
       imagePath:
           'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976163/tailor_1_bllexs.jpg',
+      shopImages: [
+        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976163/tailor_1_bllexs.jpg',
+        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_2_clc9iw.jpg',
+      ],
       rating: 5.0,
-      totalOrders: 153,
-      isVerified: true,
-      location: 'Lahore, Punjab',
-      description:
-          'Expert in formal wear, bridal suits, and alterations. '
-          'Over 10 years of experience delivering boutique-quality stitching.',
+      address: 'Shop 12, Liberty Market, Lahore, Punjab',
+      experience: '10 years',
+      workingHours: 'Mon–Sat, 9:00 AM – 8:00 PM',
+      phone: '03001234567',
+      reviews: [
+        {
+          'name': 'Sara K.',
+          'stars': 5,
+          'comment': 'Excellent work, delivered on time!',
+        },
+        {
+          'name': 'Ali B.',
+          'stars': 5,
+          'comment': 'Best tailor in Lahore, very professional.',
+        },
+      ],
     ),
     TailorModel(
       id: 't2',
-      name: 'The Fitted Look',
+      shopName: 'The Fitted Look',
+      ownerName: 'Fatima Noor',
       imagePath:
           'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_2_clc9iw.jpg',
+      shopImages: [
+        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_2_clc9iw.jpg',
+        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976163/tailor_1_bllexs.jpg',
+      ],
       rating: 4.8,
-      totalOrders: 145,
-      isVerified: true,
-      location: 'Karachi, Sindh',
-      description:
-          'Specialising in casual and semi-formal outfits. '
-          'Fast turnaround, home pickup and drop-off available.',
+      address: 'Block 5, Gulshan-e-Iqbal, Karachi, Sindh',
+      experience: '7 years',
+      workingHours: 'Mon–Sun, 10:00 AM – 7:00 PM',
+      phone: '03111234567',
+      reviews: [
+        {
+          'name': 'Hina M.',
+          'stars': 5,
+          'comment': 'Amazing stitching quality!',
+        },
+        {
+          'name': 'Usman T.',
+          'stars': 4,
+          'comment': 'Fast turnaround, very happy.',
+        },
+      ],
     ),
     TailorModel(
       id: 't3',
-      name: 'Prestige Tailors',
+      shopName: 'Prestige Tailors',
+      ownerName: 'Bilal Hussain',
       imagePath:
           'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_3_od7lzp.jpg',
+      shopImages: [
+        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_3_od7lzp.jpg',
+        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_4_nlnvmj.jpg',
+      ],
       rating: 4.9,
-      totalOrders: 210,
-      isVerified: true,
-      location: 'Islamabad, ICT',
-      description:
-          'Premium bespoke tailoring for men and women. '
-          'Specialising in shalwar kameez, suits, and wedding attire.',
+      address: 'F-7 Markaz, Islamabad, ICT',
+      experience: '12 years',
+      workingHours: 'Mon–Sat, 9:00 AM – 6:00 PM',
+      phone: '03211234567',
+      reviews: [
+        {
+          'name': 'Zara A.',
+          'stars': 5,
+          'comment': 'Premium quality, worth every rupee.',
+        },
+        {
+          'name': 'Kamran S.',
+          'stars': 5,
+          'comment': 'Best bespoke tailoring in Islamabad.',
+        },
+      ],
     ),
     TailorModel(
       id: 't4',
-      name: 'Thread & Needle Co.',
+      shopName: 'Thread & Needle Co.',
+      ownerName: 'Imran Sheikh',
       imagePath:
           'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_4_nlnvmj.jpg',
+      shopImages: [
+        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976164/tailor_4_nlnvmj.jpg',
+        'https://res.cloudinary.com/yhocqhzs/image/upload/v1782976163/tailor_1_bllexs.jpg',
+      ],
       rating: 4.7,
-      totalOrders: 98,
-      isVerified: false,
-      location: 'Faisalabad, Punjab',
-      description:
-          'Affordable quality stitching for everyday wear. '
-          'Accepts bulk orders and urgent alterations.',
+      address: 'D-Ground, Faisalabad, Punjab',
+      experience: '5 years',
+      workingHours: 'Mon–Sat, 8:00 AM – 9:00 PM',
+      phone: '03411234567',
+      reviews: [
+        {
+          'name': 'Nadia R.',
+          'stars': 5,
+          'comment': 'Very affordable and great quality.',
+        },
+        {
+          'name': 'Tariq L.',
+          'stars': 4,
+          'comment': 'Good work, accepts bulk orders.',
+        },
+      ],
     ),
   ];
 

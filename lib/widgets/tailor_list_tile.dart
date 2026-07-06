@@ -65,23 +65,6 @@ class TailorListTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (tailor.isVerified)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: EdgeInsets.all(2.r),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.verified,
-                        color: AppColors.primary,
-                        size: 14.sp,
-                      ),
-                    ),
-                  ),
               ],
             ),
             SizedBox(width: 14.w),
@@ -90,7 +73,7 @@ class TailorListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    tailor.name,
+                    tailor.shopName,
                     style: AppTextStyles.bodyMedium(
                       context,
                     ).copyWith(fontWeight: FontWeight.w700),
@@ -105,7 +88,7 @@ class TailorListTile extends StatelessWidget {
                       ),
                       SizedBox(width: 3.w),
                       Text(
-                        '${tailor.rating}  •  ${tailor.totalOrders} orders',
+                        '${tailor.rating}',
                         style: AppTextStyles.bodySmall(
                           context,
                           color: AppColors.textSecondaryLight,
@@ -124,7 +107,7 @@ class TailorListTile extends StatelessWidget {
                       SizedBox(width: 3.w),
                       Expanded(
                         child: Text(
-                          tailor.location,
+                          tailor.address,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.bodySmall(

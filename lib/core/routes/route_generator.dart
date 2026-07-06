@@ -4,8 +4,6 @@ import '../../views/splash/splash_screen.dart';
 import '../../views/auth/login_screen.dart';
 import '../../views/auth/signup_screen.dart';
 import '../../views/auth/forgot_password_screen.dart';
-import '../../views/auth/otp_verification_screen.dart';
-import '../../views/auth/otp_screen_args.dart';
 import '../../views/home/main_shell.dart';
 import '../../views/profile/edit_profile_screen.dart';
 import '../../views/tailor_profile/tailor_profile_screen.dart';
@@ -19,6 +17,10 @@ import '../../views/measurements/measurement_screen.dart';
 
 import '../../views/chat/chat_thread_screen.dart';
 import '../../views/chat/chat_thread_args.dart';
+import '../../views/auth/role_router_screen.dart';
+import '../../views/tailor_home/tailor_home_screen.dart';
+import '../../views/auth/email_verification_screen.dart';
+import '../../views/auth/password_reset_sent_screen.dart';
 
 class RouteGenerator {
   RouteGenerator._();
@@ -27,6 +29,12 @@ class RouteGenerator {
     switch (settings.name) {
       case AppRoutes.splash:
         return _build(const SplashScreen(), settings);
+
+      case AppRoutes.roleRouter:
+        return _build(const RoleRouterScreen(), settings);
+
+      case AppRoutes.tailorHome:
+        return _build(const TailorHomeScreen(), settings);
 
       case AppRoutes.login:
         return _build(const LoginScreen(), settings);
@@ -37,17 +45,12 @@ class RouteGenerator {
       case AppRoutes.forgotPassword:
         return _build(const ForgotPasswordScreen(), settings);
 
-      case AppRoutes.otpVerification:
-        final args = settings.arguments as OtpScreenArgs?;
-        if (args == null) {
-          return _build(
-            const Scaffold(
-              body: Center(child: Text('Missing OTP screen arguments')),
-            ),
-            settings,
-          );
-        }
-        return _build(OtpVerificationScreen(args: args), settings);
+      case AppRoutes.emailVerification:
+        return _build(const EmailVerificationScreen(), settings);
+
+      case AppRoutes.passwordResetSent:
+        final email = settings.arguments as String;
+        return _build(PasswordResetSentScreen(email: email), settings);
 
       case AppRoutes.home:
         final initialIndex = settings.arguments is int

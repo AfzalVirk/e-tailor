@@ -1,51 +1,58 @@
 class TailorModel {
   final String id;
-  final String name;
+  final String shopName;
+  final String ownerName;
   final String imagePath;
+  final List<String> shopImages;
   final double rating;
-  final int totalOrders;
-  final bool isVerified;
-  final String location;
-  final String description;
+  final String address;
+  final String experience;
+  final String workingHours;
+  final String phone;
+  final List<Map<String, dynamic>> reviews;
 
   const TailorModel({
     required this.id,
-    required this.name,
+    required this.shopName,
+    required this.ownerName,
     required this.imagePath,
+    required this.shopImages,
     required this.rating,
-    required this.totalOrders,
-    required this.isVerified,
-    required this.location,
-    required this.description,
+    required this.address,
+    required this.experience,
+    required this.workingHours,
+    required this.phone,
+    this.reviews = const [],
   });
 
-  /// Builds a TailorModel from a Firestore document snapshot's data.
-  /// [id] is passed separately since Firestore keeps the doc ID out of
-  /// the field map itself (it lives on the DocumentSnapshot, not in data()).
   factory TailorModel.fromMap(String id, Map<String, dynamic> map) {
     return TailorModel(
       id: id,
-      name: map['name'] as String? ?? '',
+      shopName: map['shopName'] as String? ?? '',
+      ownerName: map['ownerName'] as String? ?? '',
       imagePath: map['imagePath'] as String? ?? '',
+      shopImages: List<String>.from(map['shopImages'] as List? ?? []),
       rating: (map['rating'] as num?)?.toDouble() ?? 0.0,
-      totalOrders: (map['totalOrders'] as num?)?.toInt() ?? 0,
-      isVerified: map['isVerified'] as bool? ?? false,
-      location: map['location'] as String? ?? '',
-      description: map['description'] as String? ?? '',
+      address: map['address'] as String? ?? '',
+      experience: map['experience'] as String? ?? '',
+      workingHours: map['workingHours'] as String? ?? '',
+      phone: map['phone'] as String? ?? '',
+      reviews: List<Map<String, dynamic>>.from(map['reviews'] as List? ?? []),
     );
   }
 
-  /// Converts to a map for writing to Firestore.
-  /// `id` is deliberately excluded — it's the document ID, not a field.
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
+      'shopName': shopName,
+      'ownerName': ownerName,
       'imagePath': imagePath,
+      'shopImages': shopImages,
       'rating': rating,
-      'totalOrders': totalOrders,
-      'isVerified': isVerified,
-      'location': location,
-      'description': description,
+      'address': address,
+      'experience': experience,
+      'workingHours': workingHours,
+      'phone': phone,
+      'reviews': reviews,
     };
   }
 }
